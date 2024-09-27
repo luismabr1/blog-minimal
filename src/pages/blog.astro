@@ -1,20 +1,44 @@
 ---
-import { getCollection } from 'astro:content';
 import MainLayout from '../layouts/MainLayout.astro';
 import BlogPostWithSearch from '../components/BlogPostWithSearch';
-
-const allBlogPosts = await getCollection('blogs');
+import * as qs from 'qs';
+/* const allBlogPosts = await getCollection('blogs');
 const sortedPosts = allBlogPosts.sort(
     (a, b) => Number(new Date(b.data.date)) - Number(new Date(a.data.date))
+); */
+
+let url = import.meta.env.STRAPI_URL + "/api/posts";
+
+
+const query = qs.stringify({
+  populate: {
+    featuredImage: {
+      fields: ["name", "width", "height", "url"],
+    },
+    author: {
+      populate: {
+        bioImage: {
+          fields: ["name", "width", "height", "url"],
+        },
+      },
+    },
+    category: {
+      populate: true,
+    },
+  },
+});
+const posts = await fetch(url + "?" + query).then((response) =>
+response.json()
 );
+const {data}=posts
+console.log(posts, 'NIKEEE') 
+
 ---
 
 <MainLayout title='Blog'>
-    <div
-        class='flex flex-col items-start justify-center max-w-2xl mx-auto mb-16'
+    <div class='flex flex-col items-start justify-center max-w-2xl mx-auto mb-16'
     >
-        <h1
-            class='mb-4 text-3xl font-bold tracking-tight text-black md:text-5xl dark:text-white'
+        <h1 class='mb-4 text-3xl font-bold tracking-tight text-black md:text-5xl dark:text-white'
             transition:name='heading'
         >
             Blog
@@ -22,10 +46,10 @@ const sortedPosts = allBlogPosts.sort(
         <p class='mb-4 text-gray-600 dark:text-gray-400'>
             {
                 `I post my hackthebox writeups and other infoSec findings here.
-            In total, I've written ${sortedPosts.length} articles on my blog.
+            In total, I've written ${data.length} articles on my blog.
             Use the search below to filter by title.`
             }
         </p>
-        <BlogPostWithSearch client:only='react' sortedPosts={sortedPosts} />
+        <BlogPostWithSearch client:only='react' sortedPosts={data} />
     </div>
 </MainLayout>

@@ -3,10 +3,13 @@ import BlogPostViews from './BlogPostViews';
 
 const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: any }) => {
     const [searchValue, setSearchValue] = useState('');
-    const filteredBlogPosts = sortedPosts.filter((post: any) =>
-        post.data.title.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    return (
+    const filteredBlogPosts = sortedPosts.filter((post: any) => {
+        console.log(post.attributes.title, 'POSTS')
+        console.log(post.attributes.title.toLowerCase().includes(searchValue.toLowerCase()), 'Match')
+        post.attributes.title.toLowerCase().includes(searchValue.toLowerCase())
+    }
+);
+    return ( 
         <>
             <div className='relative w-full mb-4'>
                 <input
@@ -34,44 +37,44 @@ const BlogPostWithSearch = ({ sortedPosts }: { sortedPosts: any }) => {
             <h3 className='mt-8 mb-4 text-2xl font-bold tracking-tight text-black md:text-4xl dark:text-white'>
                 All Posts
             </h3>
-            {!filteredBlogPosts.length && (
+            {!filteredBlogPosts && (
                 <p className='mb-4 text-gray-600 dark:text-gray-400'>
                     No posts found.
                 </p>
             )}
-            {filteredBlogPosts.length > 0 &&
-                filteredBlogPosts.map(
-                    (
-                        post: {
-                            slug: string;
-                            data: {
+            {
+                sortedPosts.map((
+                         post: {
+                            id: number,
+                            attributes: {
+                                content: string,
+                                createdAt: Date,
+                                excerpt: string,
+                                slug: string
                                 title: string;
-                                slug: string;
-                                description: string;
-                            };
-                        },
-                        key: number
-                    ) => (
+                            }
+                        }
+                    ) => ( 
                         <a
-                            href={`/blog/${post.slug}`}
+                            href={`/blog/${post.attributes.slug}`}
                             className='w-full'
-                            key={key}
+                            key={post.id}
                         >
                             <div className='w-full mb-8'>
                                 <div className='flex flex-col justify-between md:flex-row'>
                                     <h4 className='w-full mb-2 text-lg font-medium text-gray-900 md:text-xl dark:text-gray-100'>
-                                        {post.data.title}
+                                        {post.attributes.title}
                                     </h4>
                                     <p className='w-32 mb-4 text-left text-gray-500 md:text-right md:mb-0'>
                                         <div className='flex items-center space-x-1'>
                                             {' '}
-                                            <BlogPostViews slug={post.slug} />
+                                            <BlogPostViews slug={post.attributes.slug} />
                                             <span>views</span>
                                         </div>
                                     </p>
                                 </div>
                                 <p className='text-gray-600 dark:text-gray-400'>
-                                    {post.data.description}
+                                    {post.attributes.excerpt}
                                 </p>
                             </div>
                         </a>

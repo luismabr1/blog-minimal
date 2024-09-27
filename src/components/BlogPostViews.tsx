@@ -1,7 +1,7 @@
 import { useInView } from 'react-intersection-observer';
 import { useEffect, useState } from 'react';
 import { formatViews } from '../lib/utils';
-
+const url = import.meta.env.PUBLIC_API_URL
 const BlogPostViews = ({
     slug,
     className,
@@ -11,15 +11,17 @@ const BlogPostViews = ({
     className?: string;
     increment?: boolean;
 }) => {
+    console.log(url+ '/views/' + slug, 'NIKEEEE')
     const { ref, inView } = useInView({
         triggerOnce: true,
     });
     const [views, setViews] = useState<number | null>(null);
+    const root_url = url+ '/views/' + slug
 
     useEffect(() => {
         try {
             if (inView) {
-                fetch(`${import.meta.env.PUBLIC_API_URL}/views/${slug}`, {
+                fetch(root_url, {
                     method: increment ? 'POST' : 'GET',
                 })
                     .then((res) => res.json())
